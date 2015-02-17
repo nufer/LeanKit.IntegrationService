@@ -302,6 +302,19 @@ namespace IntegrationService.Targets.JIRA
 
 			if (issue.Fields != null)
 			{
+                var assignedUserId = issue.LeanKitAssignedUserId(boardId, LeanKit);
+                if (assignedUserId != null && !card.AssignedUserIds.Contains(assignedUserId.Value))
+                {
+                    var asignee = new[] { assignedUserId.Value };
+                    card.AssignedUserIds = asignee;
+                    saveCard = true;
+                }
+                else if (assignedUserId == null && card.AssignedUserIds.Count() != 0)
+                {
+                    card.AssignedUserIds = new long[0];
+                    saveCard = true;
+                }
+
 				if (issue.Fields.Summary != null && issue.Fields.Summary != card.Title)
 				{
 					card.Title = issue.Fields.Summary;
